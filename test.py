@@ -11,6 +11,8 @@ hik_driver.utils.issue_action_command(cam)
 
 image_frame = hik_driver.utils.pop_image_buffer(cam)
 
+print(type(image_frame))
+
 hik_driver.utils.save_non_raw_image(1,image_frame,cam)
 
 hik_driver.utils.close_device(cam)
