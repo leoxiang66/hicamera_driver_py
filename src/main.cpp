@@ -10,7 +10,6 @@ int main()
         return 1;
     }
 
-    // Perform other operations with the initialized SDK
 
     // Clean up and close the SDK
     MV_CC_CloseDevice(handle);

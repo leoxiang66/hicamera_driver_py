@@ -1,7 +1,12 @@
-触发一次Action Command 指令， 使得所有PTP同步的海康相机采集一次
+build:
+
+```sh
+make
+```
+
 
 run:
 
-```
-python test.py
+```sh
+make run
 ```
