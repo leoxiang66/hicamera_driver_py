@@ -8,3 +8,5 @@
 void *init_SDK();
 
 bool PrintDeviceInfo(MV_CC_DEVICE_INFO *pstMVDevInfo);
+
+bool start_grabbing(auto handle);
