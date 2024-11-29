@@ -4,6 +4,7 @@ import sys
 from ctypes import *
 import logging
 from .SDK.MvCameraControl_class import *
+from datetime import datetime, timedelta
 
 
 # 配置日志记录器
@@ -191,7 +192,6 @@ def open_device(cam, stDeviceList):
 
 def close_device(cam):
     logger.info("Closing device...")
-    input("Press Enter to close the device and exit...")
     cam.MV_CC_CloseDevice()
     cam.MV_CC_DestroyHandle()
     MvCamera.MV_CC_Finalize()
@@ -229,6 +229,26 @@ def start_grabbing(cam):
     if ret != 0:
         raise Exception("start grabbing fail! ret[0x%x]" % ret)
     
+def combine_timestamp(high, low):
+    return (high << 32) | low
+
+
+    
+def print_frame_info(frame_info: MV_FRAME_OUT_INFO):
+    timestamp_nano = combine_timestamp(frame_info.nDevTimeStampHigh,frame_info.nDevTimeStampLow)
+    
+    logger.info(f"Frame Info - Width: {frame_info.nWidth}")
+    logger.info(f"Frame Info - Height: {frame_info.nHeight}")
+    logger.info(f"Frame Info - Pixel Type: {frame_info.enPixelType}")
+    logger.info(f"Frame Info - Frame Number: {frame_info.nFrameNum}")
+    logger.info(f"Frame Info - Timestamp (High): {frame_info.nDevTimeStampHigh}")
+    logger.info(f"Frame Info - Timestamp (Low): {frame_info.nDevTimeStampLow}")
+    logger.info(f"Frame Info - Timestamp (64bit): {timestamp_nano}")
+    logger.info(f"Frame Info - Timestamp (date format): {nanosec2date(timestamp_nano)}")
+    logger.info(f"Frame Info - Host Timestamp: {frame_info.nHostTimeStamp}")
+    logger.info(f"Frame Info - Frame Length: {frame_info.nFrameLen}")
+    logger.info(f"Frame Info - Lost Packet Count: {frame_info.nLostPacket}")
+    
 def capture_and_save_image(cam, save_type):
     logger.info("Capturing and saving image...")
     
@@ -242,8 +262,7 @@ def capture_and_save_image(cam, save_type):
 
         ret = cam.MV_CC_GetImageBuffer(stOutFrame, 20000)
         if None != stOutFrame.pBufAddr and 0 == ret:
-            logger.info("get one frame: Width[%d], Height[%d], nFrameNum[%d]" % (
-            stOutFrame.stFrameInfo.nWidth, stOutFrame.stFrameInfo.nHeight, stOutFrame.stFrameInfo.nFrameNum))
+            print_frame_info(stOutFrame.stFrameInfo)
 
             # ch:根据save_type选择保存格式 | en:Choose save format according to save_type
             if save_type.lower() == "raw":
@@ -341,30 +360,98 @@ def issue_action_command(
         raise Exception("Issue action command failed! ret[0x%x]" % ret)
     
     # 打印 Action 命令结果
-    logger.info("Action Command Results:")
     for i in range(actionCmdResults.nNumResults):
         result = actionCmdResults.pResults[i]
-        logger.info(f"Result {i+1}:")
-        logger.info(f"Status: {result.nStatus==0}")
+        logger.info(f"Action Command Results - Result {i+1}:")
+        logger.info(f"Action Command Results - Status: {result.nStatus==0}")
         
         
-def pop_image_buffer(cam, timeout=1000):
+def pop_image_buffer(cam, timeout=1000,print_info=True):
     stOutFrame = MV_FRAME_OUT()
     memset(byref(stOutFrame), 0, sizeof(stOutFrame))
 
     ret = cam.MV_CC_GetImageBuffer(stOutFrame, timeout)
     if None != stOutFrame.pBufAddr and 0 == ret:
-        logger.info("get one frame: Width[%d], Height[%d], nFrameNum[%d]" % (
-        stOutFrame.stFrameInfo.nWidth, stOutFrame.stFrameInfo.nHeight, stOutFrame.stFrameInfo.nFrameNum))
-
-        return stOutFrame
-
-
+        if print_info:
+            print_frame_info(stOutFrame.stFrameInfo)
         
-    
-    
+        cam.MV_CC_FreeImageBuffer(stOutFrame)
+        return stOutFrame
     
     
 
 
+
     
+def set_exposure_auto_continuous(cam):
+    logger.info("Setting exposure auto mode to continous...")
+    ret = cam.MV_CC_SetEnumValue("ExposureAuto", MV_EXPOSURE_AUTO_MODE_CONTINUOUS)
+    if ret != 0:
+        raise Exception("set exposure auto mode to continuous fail! ret[0x%x]" % ret)
+
+    
+def set_exposure_auto_off(cam):
+    logger.info("Setting exposure auto mode to off...")
+    ret = cam.MV_CC_SetEnumValue("ExposureAuto", MV_EXPOSURE_AUTO_MODE_OFF)
+    if ret != 0:
+        raise Exception("set exposure auto mode to off fail! ret[0x%x]" % ret)
+    
+
+def get_exposure_time(cam):
+    logger.info("Reading exposure time...")
+
+    # 创建MVCC_FLOATVALUE结构体对象
+    stFloatValue = MVCC_FLOATVALUE()
+
+    # 调用MV_CC_GetFloatValue函数获取"ExposureTime"属性的值
+    ret = cam.MV_CC_GetFloatValue("ExposureTime", stFloatValue)
+    if ret != 0:
+        logger.info("Get ExposureTime fail! ret[0x%x]" % ret)
+    else:
+        # 获取曝光时间的当前值、最大值和最小值
+        exposure_time_cur = stFloatValue.fCurValue
+        exposure_time_max = stFloatValue.fMax
+        exposure_time_min = stFloatValue.fMin
+        logger.info("ExposureTime: Current={:.2f}, Max={:.2f}, Min={:.2f}".format(exposure_time_cur, exposure_time_max, exposure_time_min))
+        
+def set_exposure_time(cam, exposure_time):
+    logger.info(f"Setting exposure time to {exposure_time}...")
+
+    ret = cam.MV_CC_SetFloatValue("ExposureTime", exposure_time)
+    if ret != 0:
+        logger.error("Set ExposureTime fail! ret[0x%x]" % ret)
+
+
+def set_IEEE1588(cam):
+    logger.info("Setting IEEE 1588 ...")
+
+
+    # 调用MV_CC_GetFloatValue函数获取"ExposureTime"属性的值
+    ret = cam.MV_CC_SetBoolValue("GevIEEE1588", True)
+    if ret != 0:
+        logger.info("Set IEEE 1588 fail! ret[0x%x]" % ret)
+        
+        
+def nanosec2date(nanosec):
+    timestamp_64bit = nanosec
+
+    # 将时间戳转换为秒和纳秒
+    seconds = timestamp_64bit // 1000000000
+    nanoseconds = timestamp_64bit % 1000000000
+
+    # 使用datetime.utcfromtimestamp()函数将秒转换为UTC时间的datetime对象
+    utc_datetime = datetime.utcfromtimestamp(seconds)
+
+    # 创建表示中国标准时间的时区偏移量(UTC+8)
+    china_timezone = timedelta(hours=8)
+
+    # 将UTC时间转换为中国标准时间
+    china_datetime = utc_datetime + china_timezone
+
+    # 创建一个新的datetime对象,并添加纳秒部分
+    precise_datetime = china_datetime.replace(microsecond=nanoseconds // 1000)
+
+    # 将datetime对象格式化为年月日时分秒毫秒微秒纳秒的字符串表示
+    formatted_time = precise_datetime.strftime("%Y-%m-%d %H:%M:%S.%f") + f"{nanoseconds % 1000:03d}"
+
+    return formatted_time

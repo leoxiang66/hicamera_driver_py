@@ -2,6 +2,12 @@ import hik_driver
 
 cam = hik_driver.utils.init_SDK()
 
+hik_driver.utils.set_exposure_auto_off(cam)
+hik_driver.utils.set_exposure_time(cam,30000.0)
+hik_driver.utils.get_exposure_time(cam)
+
+hik_driver.utils.set_IEEE1588(cam)
+
 hik_driver.utils.set_trigger_mode_On(cam)
 hik_driver.utils.set_trigger_source(cam, "Action1")
 hik_driver.utils.set_action_keys(cam)
@@ -11,7 +17,7 @@ hik_driver.utils.issue_action_command(cam)
 
 image_frame = hik_driver.utils.pop_image_buffer(cam)
 
-print(type(image_frame))
+
 
 hik_driver.utils.save_non_raw_image(1,image_frame,cam)
 
