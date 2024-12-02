@@ -3,17 +3,23 @@
 int main()
 {
     // Call your functions or perform desired operations here
-    void* handle = init_SDK();
-    if (handle == NULL)
+    void* cam = init_SDK();
+    if (cam == NULL)
     {
         printf("Failed to initialize SDK.\n");
         return 1;
     }
 
+    set_exposure_auto_off(cam);
+
+    set_exposure_time(cam, 30000.0); // 30ms
+
+    get_exposure_time(cam);
+
+    
 
     // Clean up and close the SDK
-    MV_CC_CloseDevice(handle);
-    MV_CC_DestroyHandle(handle);
+    close_device(cam);
 
     return 0;
 }
