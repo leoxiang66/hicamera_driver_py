@@ -1,8 +1,7 @@
 #include "utils.h"
 
-
 // ch:����ͼƬ | en:Save Image
-int SaveImage(void* handle, MV_SAVE_IAMGE_TYPE enSaveImageType, MV_FRAME_OUT *stImageInfo)
+int SaveImage(void *handle, MV_SAVE_IAMGE_TYPE enSaveImageType, MV_FRAME_OUT *stImageInfo)
 {
     char chImageName[256] = {0};
     MV_CC_IMAGE stImg;
@@ -243,7 +242,7 @@ bool PrintDeviceInfo(MV_CC_DEVICE_INFO *pstMVDevInfo)
     return true;
 }
 
-bool start_grabbing(void* handle)
+bool start_grabbing(void *handle)
 {
     auto nRet = MV_CC_StartGrabbing(handle);
     if (MV_OK != nRet)
@@ -255,185 +254,98 @@ bool start_grabbing(void* handle)
     return true;
 }
 
-void save_non_raw_image(char chSaveImageType[], void* handle)
+void save_non_raw_image(const char *format, void *handle, MV_FRAME_OUT *stImageInfo)
 {
-    // ch:��ȡ���ݰ���С | en:Get payload size
-    MVCC_INTVALUE stParam;
-    memset(&stParam, 0, sizeof(MVCC_INTVALUE));
-    auto nRet = MV_CC_GetIntValue(handle, "PayloadSize", &stParam);
-    if (MV_OK != nRet)
+    if (0 == strcmp(format, "jpg"))
     {
-        printf("Get PayloadSize fail! nRet [0x%x]\n", nRet);
-        return;
+        auto nRet = SaveImage(handle, MV_Image_Jpeg, stImageInfo);
+        if (MV_OK == nRet)
+        {
+            printf("Save Image Jpeg success.\n");
+        }
+        else
+        {
+            printf("Save image Jpeg failed.\n");
+        }
     }
-    unsigned int nPayloadSize = stParam.nCurValue;
-
-    unsigned char *pDstBuf = NULL;
-    MV_FRAME_OUT stImageInfo = {0};
-    MV_CC_HB_DECODE_PARAM stDecodeParam = {0};
-    nRet = MV_CC_GetImageBuffer(handle, &stImageInfo, 20000); // ���������Ҫ�����ͼ���ȡ���
-    if (nRet == MV_OK)
+    else if (0 == strcmp(format, "bmp"))
     {
-        printf("Get Image Buffer: Width[%d], Height[%d], FrameNum[%d]\n",
-               stImageInfo.stFrameInfo.nExtendWidth, stImageInfo.stFrameInfo.nExtendHeight, stImageInfo.stFrameInfo.nFrameNum);
-
-        printf("Please Input Save Image Type(raw/Jpeg/bmp/tiff/png):");
-        while (true)
+        auto nRet = SaveImage(handle, MV_Image_Bmp, stImageInfo);
+        if (MV_OK == nRet)
         {
-            char chSaveImageType[128] = {0};
-            scanf("%s", chSaveImageType);
-            if (0 == strcmp(chSaveImageType, "raw"))
-            {
-                // �ж��Ƿ�ΪHBģʽ,���ǽ��н���
-                bool bflag = IsHBPixelFormat(stImageInfo.stFrameInfo.enPixelType);
-                if (bflag)
-                {
-                    stDecodeParam.pSrcBuf = stImageInfo.pBufAddr;
-                    stDecodeParam.nSrcLen = stImageInfo.stFrameInfo.nFrameLenEx;
-
-                    if (pDstBuf == NULL)
-                    {
-                        pDstBuf = (unsigned char *)malloc(sizeof(unsigned char) * (nPayloadSize * 3));
-                        if (NULL == pDstBuf)
-                        {
-                            printf("malloc pDstData fail !\n");
-                            nRet = MV_E_RESOURCE;
-                        }
-                    }
-                    stDecodeParam.pDstBuf = pDstBuf;
-                    stDecodeParam.nDstBufSize = nPayloadSize;
-                    nRet = MV_CC_HB_Decode(handle, &stDecodeParam);
-                    if (nRet != MV_OK)
-                    {
-                        printf("Decode fail![0x%x]\n", nRet);
-                    }
-                    else
-                    {
-                        printf("HB Decode success!\n");
-                    }
-
-                    // ������ͼ
-                    char chRawPath[256] = {0};
-                    sprintf(chRawPath, "Image_w%d_h%d_fn%03d.raw", stDecodeParam.nWidth, stDecodeParam.nHeight, stImageInfo.stFrameInfo.nFrameNum);
-                    FILE *file = fopen(chRawPath, "wb+");
-                    if (NULL != file)
-                    {
-                        // д�����ݵ��ļ�
-                        size_t bytesWritten = fwrite(stDecodeParam.pDstBuf, 1, stDecodeParam.nDstBufLen, file);
-                        if (stDecodeParam.nDstBufLen == bytesWritten)
-                        {
-                            printf("Save image raw success.\n");
-                        }
-                        else
-                        {
-                            printf("Save image raw failed.\n");
-                        }
-
-                        // �ر��ļ�
-                        fclose(file);
-                    }
-                }
-                else
-                {
-                    // ������ͼ
-                    char chRawPath[256] = {0};
-                    sprintf(chRawPath, "Image_w%d_h%d_fn%03d.raw", stImageInfo.stFrameInfo.nExtendWidth, stImageInfo.stFrameInfo.nExtendHeight, stImageInfo.stFrameInfo.nFrameNum);
-                    FILE *file = fopen(chRawPath, "wb+");
-                    if (NULL != file)
-                    {
-                        // д�����ݵ��ļ�
-                        size_t bytesWritten = fwrite(stImageInfo.pBufAddr, 1, stImageInfo.stFrameInfo.nFrameLenEx, file);
-
-                        if (stImageInfo.stFrameInfo.nFrameLenEx == bytesWritten)
-                        {
-                            printf("Save image raw success.\n");
-                        }
-                        else
-                        {
-                            printf("Save image raw failed.\n");
-                        }
-                        // �ر��ļ�
-                        fclose(file);
-                    }
-                }
-            }
-            else if (0 == strcmp(chSaveImageType, "Jpeg"))
-            {
-                nRet = SaveImage(handle,MV_Image_Jpeg, &stImageInfo);
-                if (MV_OK == nRet)
-                {
-                    printf("Save Image Jpeg success.\n");
-                }
-                else
-                {
-                    printf("Save image Jpeg failed.\n");
-                }
-            }
-            else if (0 == strcmp(chSaveImageType, "bmp"))
-            {
-                nRet = SaveImage(handle,MV_Image_Bmp, &stImageInfo);
-                if (MV_OK == nRet)
-                {
-                    printf("Save Image bmp success.\n");
-                }
-                else
-                {
-                    printf("Save image bmp failed.\n");
-                }
-            }
-            else if (0 == strcmp(chSaveImageType, "tiff"))
-            {
-                nRet = SaveImage(handle,MV_Image_Tif, &stImageInfo);
-                if (MV_OK == nRet)
-                {
-                    printf("Save Image tif success.\n");
-                }
-                else
-                {
-                    printf("Save image tif failed.\n");
-                }
-            }
-            else if (0 == strcmp(chSaveImageType, "png"))
-            {
-                nRet = SaveImage(handle,MV_Image_Png, &stImageInfo);
-                if (MV_OK == nRet)
-                {
-                    printf("Save Image png success.\n");
-                }
-                else
-                {
-                    printf("Save image png failed.\n");
-                }
-            }
-            else
-            {
-                printf("Input not supoort,Please Input Save Image Type(raw/Jpeg/bmp/tiff/png):");
-                continue;
-            }
+            printf("Save Image bmp success.\n");
         }
-
-        if (MV_OK != nRet)
+        else
         {
-            if (NULL != pDstBuf)
-            {
-                free(pDstBuf);
-                pDstBuf = NULL;
-            }
+            printf("Save image bmp failed.\n");
         }
-
-        nRet = MV_CC_FreeImageBuffer(handle, &stImageInfo);
-        if (nRet != MV_OK)
+    }
+    else if (0 == strcmp(format, "tiff"))
+    {
+        auto nRet = SaveImage(handle, MV_Image_Tif, stImageInfo);
+        if (MV_OK == nRet)
         {
-            printf("Free Image Buffer fail! nRet [0x%x]\n", nRet);
+            printf("Save Image tif success.\n");
+        }
+        else
+        {
+            printf("Save image tif failed.\n");
+        }
+    }
+    else if (0 == strcmp(format, "png"))
+    {
+        auto nRet = SaveImage(handle, MV_Image_Png, stImageInfo);
+        if (MV_OK == nRet)
+        {
+            printf("Save Image png success.\n");
+        }
+        else
+        {
+            printf("Save image png failed.\n");
         }
     }
     else
     {
-        printf("Get Image fail! nRet [0x%x]\n", nRet);
+        printf("Input not supoort,Please Input Save Image Type(raw/Jpeg/bmp/tiff/png):");
     }
 }
 
-void stop_grabbing(void* handle)
+void issue_action_command(unsigned int action_device_key, unsigned int action_group_key, unsigned int group_mask, const char *broadcast_address, unsigned int time_out, unsigned int action_time_enable)
+{
+    MV_ACTION_CMD_INFO *stActionCmdInfo = new MV_ACTION_CMD_INFO;
+    stActionCmdInfo->nDeviceKey = action_device_key;
+    stActionCmdInfo->nGroupKey = action_group_key;
+    stActionCmdInfo->nGroupMask = group_mask;
+    stActionCmdInfo->pBroadcastAddress = broadcast_address;
+    stActionCmdInfo->nTimeOut = time_out;
+    stActionCmdInfo->bActionTimeEnable = action_time_enable;
+
+    MV_ACTION_CMD_RESULT_LIST *actionCmdResults = new MV_ACTION_CMD_RESULT_LIST;
+
+    if (MV_GIGE_IssueActionCommand(stActionCmdInfo, actionCmdResults) != MV_OK)
+    {
+        std::cout << "Issue action command failed!" << std::endl;
+    }
+
+    else
+    {
+        for (size_t i = 0; i < actionCmdResults->nNumResults; i++)
+        {
+            // Access the current result
+            auto result = actionCmdResults->pResults[i];
+
+            // Print the result index
+            std::cout << "Action Command Results - Result " << (i + 1) << ":\n";
+
+            // Print the status (assuming nStatus == 0 indicates success)
+            std::cout << "Action Command Results - Status: " << (result.nStatus == 0 ? "Success" : "Failure") << "\n";
+
+            std::cout << std::endl; // Add an extra line for readability
+        }
+    }
+}
+
+void stop_grabbing(void *handle)
 {
     // ch:ֹͣȡ�� | en:Stop grab image
     auto nRet = MV_CC_StopGrabbing(handle);
@@ -443,7 +355,7 @@ void stop_grabbing(void* handle)
     }
 }
 
-void close_device(void* handle)
+void close_device(void *handle)
 { // ch:�ر��豸 | Close device
     auto nRet = MV_CC_CloseDevice(handle);
     if (MV_OK != nRet)
@@ -457,7 +369,7 @@ void close_device(void* handle)
     MV_CC_Finalize();
 }
 
-void destroy_handle(void* handle)
+void destroy_handle(void *handle)
 { // ch:���پ�� | Destroy handle
     auto nRet = MV_CC_DestroyHandle(handle);
     if (MV_OK != nRet)
@@ -478,7 +390,7 @@ void PressEnterToExit(void)
         ;
 }
 
-void set_exposure_auto_off(void* handle)
+void set_exposure_auto_off(void *handle)
 {
 
     auto nRet = MV_CC_SetEnumValue(handle, "ExposureAuto", MV_EXPOSURE_AUTO_MODE_OFF);
@@ -490,17 +402,17 @@ void set_exposure_auto_off(void* handle)
 
 // ch:获取和设置Float型参数，如 ExposureTime和Gain
 // en:Get Float type parameters, such as ExposureTime and Gain
-int GetFloatValue(void* handle, IN const char *strKey, OUT MVCC_FLOATVALUE *pFloatValue)
+int GetFloatValue(void *handle, IN const char *strKey, OUT MVCC_FLOATVALUE *pFloatValue)
 {
     return MV_CC_GetFloatValue(handle, strKey, pFloatValue);
 }
 
-int GetIntValue(void* handle, IN const char *strKey, OUT MVCC_INTVALUE *pIntValue)
+int GetIntValue(void *handle, IN const char *strKey, OUT MVCC_INTVALUE *pIntValue)
 {
     return MV_CC_GetIntValue(handle, strKey, pIntValue);
 }
 
-float get_exposure_time(void* handle)
+float get_exposure_time(void *handle)
 {
 
     MVCC_FLOATVALUE *result = new MVCC_FLOATVALUE;
@@ -528,17 +440,17 @@ float get_exposure_time(void* handle)
     }
 }
 
-int SetFloatValue(void* handle, IN const char *strKey, IN float fValue)
+int SetFloatValue(void *handle, IN const char *strKey, IN float fValue)
 {
     return MV_CC_SetFloatValue(handle, strKey, fValue);
 }
 
-int SetIntValue(void* handle, IN const char *strKey, IN unsigned int Value)
+int SetIntValue(void *handle, IN const char *strKey, IN unsigned int Value)
 {
     return MV_CC_SetIntValue(handle, strKey, Value);
 }
 
-bool set_exposure_time(void* handle, float value)
+bool set_exposure_time(void *handle, float value)
 {
     if (SetFloatValue(handle, "ExposureTime", value) != MV_OK)
     {
@@ -551,56 +463,86 @@ bool set_exposure_time(void* handle, float value)
 
 // ch:获取和设置Bool型参数，如 ReverseX
 // en:Get Bool type parameters, such as ReverseX
-int GetBoolValue(void* handle, IN const char *strKey, OUT bool *pbValue)
+int GetBoolValue(void *handle, IN const char *strKey, OUT bool *pbValue)
 {
     return MV_CC_GetBoolValue(handle, strKey, pbValue);
 }
 
-int SetBoolValue(void* handle, IN const char *strKey, IN bool bValue)
+int SetBoolValue(void *handle, IN const char *strKey, IN bool bValue)
 {
     return MV_CC_SetBoolValue(handle, strKey, bValue);
 }
 
 // ch:获取和设置String型参数，如 DeviceUserID
 // en:Get String type parameters, such as DeviceUserID
-int GetStringValue(void* handle, IN const char *strKey, MVCC_STRINGVALUE *pStringValue)
+int GetStringValue(void *handle, IN const char *strKey, MVCC_STRINGVALUE *pStringValue)
 {
     return MV_CC_GetStringValue(handle, strKey, pStringValue);
 }
 
-int SetStringValue(void* handle, IN const char *strKey, IN const char *strValue)
+int SetStringValue(void *handle, IN const char *strKey, IN const char *strValue)
 {
     return MV_CC_SetStringValue(handle, strKey, strValue);
 }
 
 // ch:获取和设置Enum型参数，如 PixelFormat
 // en:Get Enum type parameters, such as PixelFormat
-int GetEnumValue(void* handle, IN const char *strKey, OUT MVCC_ENUMVALUE *pEnumValue)
+int GetEnumValue(void *handle, IN const char *strKey, OUT MVCC_ENUMVALUE *pEnumValue)
 {
     return MV_CC_GetEnumValue(handle, strKey, pEnumValue);
 }
 
-int SetEnumValue(void* handle, IN const char *strKey, IN unsigned int nValue)
+int SetEnumValue(void *handle, IN const char *strKey, IN unsigned int nValue)
 {
     return MV_CC_SetEnumValue(handle, strKey, nValue);
 }
 
-int SetEnumValueByString(void* handle, IN const char *strKey, IN const char *sValue)
+int SetEnumValueByString(void *handle, IN const char *strKey, IN const char *sValue)
 {
     return MV_CC_SetEnumValueByString(handle, strKey, sValue);
 }
 
-bool turn_on_IEEE1588(void* handle)
+bool turn_on_IEEE1588(void *handle)
 {
     if (SetBoolValue(handle, "GevIEEE1588", true) != MV_OK)
     {
         std::cout << "Failed to turn on IEEE 1588" << std::endl;
         return false;
     }
+
+    if (SetEnumValue(handle, "GevIEEE1588Status", 8) != MV_OK)
+    {
+        std::cout << "Failed to set the camera as slave..." << std::endl;
+        return false;
+    }
+
     return true;
 }
 
-bool set_trigger_mode_on(void* handle)
+void wait_until_slave(void *handle)
+{
+    MVCC_ENUMVALUE v2;
+    do
+    {
+        std::cout << "waiting on salve ..." << std::endl;
+        sleep(2);
+        GetEnumValue(handle, "GevIEEE1588Status", &v2);
+    } while (v2.nCurValue != 8);
+}
+
+void print_IEEE1588_status(void *handle)
+{
+    bool v1;
+    MVCC_ENUMVALUE v2;
+
+    GetBoolValue(handle, "GevIEEE1588", &v1);
+    GetEnumValue(handle, "GevIEEE1588Status", &v2);
+
+    std::cout << v1 << std::endl;
+    std::cout << v2.nCurValue << std::endl;
+}
+
+bool set_trigger_mode_on(void *handle)
 {
     if (SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_ON) != MV_OK)
     {
@@ -610,7 +552,7 @@ bool set_trigger_mode_on(void* handle)
     return true;
 }
 
-bool set_trigger_source(void* handle, const char *source)
+bool set_trigger_source(void *handle, const char *source)
 {
     if (SetEnumValueByString(handle, "TriggerSource", source) != MV_OK)
     {
@@ -620,7 +562,7 @@ bool set_trigger_source(void* handle, const char *source)
     return true;
 }
 
-bool set_trigger_source_to_action(void* handle)
+bool set_trigger_source_to_action(void *handle)
 {
     if (SetEnumValueByString(handle, "TriggerSource", "Action1") != MV_OK)
     {
@@ -630,7 +572,7 @@ bool set_trigger_source_to_action(void* handle)
     return true;
 }
 
-bool set_action_keys(void* handle, unsigned int action_device_key, unsigned int action_group_key, unsigned int group_mask)
+bool set_action_keys(void *handle, unsigned int action_device_key, unsigned int action_group_key, unsigned int group_mask)
 {
 
     if (SetIntValue(handle, "ActionDeviceKey", action_device_key) != MV_OK)
@@ -650,4 +592,83 @@ bool set_action_keys(void* handle, unsigned int action_device_key, unsigned int 
     }
 
     return true;
+}
+
+MV_FRAME_OUT *pop_image_buffer(void *handle, unsigned int timeout, bool print_info)
+{
+    MV_FRAME_OUT *out_frame = new MV_FRAME_OUT;
+
+    auto ret = MV_CC_GetImageBuffer(handle, out_frame, timeout);
+
+    if (out_frame->pBufAddr != NULL && ret == MV_OK)
+    {
+        if (print_info)
+        {
+            print_frame_info(out_frame);
+        }
+
+        if (MV_CC_FreeImageBuffer(handle, out_frame) != MV_OK)
+        {
+            std::cout << "free image buffer failed..." << std::endl;
+        }
+
+        return out_frame;
+    }
+
+    return NULL;
+}
+
+void print_frame_info(MV_FRAME_OUT *frame)
+{
+    auto frame_info = frame->stFrameInfo;
+
+    // Combine high and low timestamps into a 64-bit timestamp
+    int64_t timestamp_nano = combine_high_low(frame_info.nDevTimeStampHigh, frame_info.nDevTimeStampLow);
+
+    // Print frame information
+    std::cout << "Frame Info - Width: " << frame_info.nWidth << "\n";
+    std::cout << "Frame Info - Height: " << frame_info.nHeight << "\n";
+    std::cout << "Frame Info - Pixel Type: " << frame_info.enPixelType << "\n";
+    std::cout << "Frame Info - Frame Number: " << frame_info.nFrameNum << "\n";
+    std::cout << "Frame Info - Timestamp (High): " << frame_info.nDevTimeStampHigh << "\n";
+    std::cout << "Frame Info - Timestamp (Low): " << frame_info.nDevTimeStampLow << "\n";
+    std::cout << "Frame Info - Timestamp (64bit): " << timestamp_nano << "\n";
+    std::cout << "Frame Info - Timestamp (date format): " << nanosec2date(timestamp_nano) << "\n";
+    std::cout << "Frame Info - Host Timestamp: " << frame_info.nHostTimeStamp << "\n";
+    std::cout << "Frame Info - Frame Length: " << frame_info.nFrameLen << "\n";
+    std::cout << "Frame Info - Lost Packet Count: " << frame_info.nLostPacket << "\n";
+}
+
+int64_t combine_high_low(unsigned int high, unsigned int low)
+{
+    return (static_cast<int64_t>(high) << 32) | static_cast<int64_t>(low);
+}
+
+std::string nanosec2date(int64_t nanoseconds)
+{
+    // Convert nanoseconds to seconds since epoch
+    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::nanoseconds(nanoseconds));
+
+    // Create a time_point from the seconds
+    auto time_point = std::chrono::system_clock::time_point(seconds);
+
+    // Convert to a std::time_t for formatting
+    std::time_t time_t_value = std::chrono::system_clock::to_time_t(time_point);
+
+    // Format the time as a string (use std::strftime as an alternative to std::put_time)
+    char buffer[100];
+    if (std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", std::localtime(&time_t_value)))
+    {
+        // Add nanoseconds part for precision
+        int64_t remaining_nanos = nanoseconds % 1000000000;
+
+        // Use a stringstream for constructing the final result
+        std::ostringstream oss;
+        oss << buffer << "." << std::setw(9) << std::setfill('0') << remaining_nanos;
+
+        return oss.str();
+    }
+
+    // If formatting fails, return an empty string
+    return "";
 }
