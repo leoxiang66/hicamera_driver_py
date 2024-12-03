@@ -11,6 +11,7 @@
 #include <sstream>
 #include <iomanip> 
 #include "constants.h"
+#include <thread>
 
 
 int SaveImage(void *handle, MV_SAVE_IAMGE_TYPE enSaveImageType, MV_FRAME_OUT *stImageInfo);
@@ -69,7 +70,9 @@ bool set_action_keys(void *handle, unsigned int action_device_key = 1, unsigned 
 
 MV_FRAME_OUT* pop_image_buffer(void *handle, unsigned int timeout = 1000, bool print_info = true);
 
-void print_frame_info(MV_FRAME_OUT *frame);
+
+
+void print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp = false);
 
 int64_t combine_high_low(unsigned int high, unsigned int low);
 

@@ -27,8 +27,7 @@ void Timer::syncToFirstInterval()
     std::cout << "Wait until " << nanosec2date(next_interval_us_ * 1000) << std::endl;
 
     // 睡眠
-    std::this_thread::sleep_for(std::chrono::microseconds(sleep_time_us) -
-                                std::chrono::microseconds(21000));
+    std::this_thread::sleep_for(std::chrono::microseconds(sleep_time_us) - std::chrono::microseconds(1500));
 }
 
 // 同步到下一个时间间隔
@@ -39,8 +38,7 @@ void Timer::syncToNextInterval()
 
     if (sleep_t_us > 0)
     {
-        std::this_thread::sleep_for(std::chrono::microseconds(sleep_t_us) -
-                                    std::chrono::microseconds(2));
+        std::this_thread::sleep_for(std::chrono::microseconds(sleep_t_us) - std::chrono::microseconds(1000));
     }
     else
     {

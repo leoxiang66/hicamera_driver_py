@@ -530,8 +530,7 @@ void wait_until_slave(void *handle)
     } while (v2.nCurValue != IEEE_SLAVE);
 }
 
-
-const char* get_IEEE_status(const unsigned int value)
+const char *get_IEEE_status(const unsigned int value)
 {
     switch (value)
     {
@@ -563,7 +562,7 @@ const char* get_IEEE_status(const unsigned int value)
         return "Slave";
 
     default:
-        std::cout << "invalid value: "<<value << std::endl;
+        std::cout << "invalid value: " << value << std::endl;
         return "Invalid value";
     }
 }
@@ -656,25 +655,32 @@ MV_FRAME_OUT *pop_image_buffer(void *handle, unsigned int timeout, bool print_in
     return NULL;
 }
 
-void print_frame_info(MV_FRAME_OUT *frame)
+void print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp)
 {
     auto frame_info = frame->stFrameInfo;
 
     // Combine high and low timestamps into a 64-bit timestamp
     int64_t timestamp_nano = combine_high_low(frame_info.nDevTimeStampHigh, frame_info.nDevTimeStampLow);
 
-    // Print frame information
-    std::cout << "Frame Info - Width: " << frame_info.nWidth << "\n";
-    std::cout << "Frame Info - Height: " << frame_info.nHeight << "\n";
-    std::cout << "Frame Info - Pixel Type: " << frame_info.enPixelType << "\n";
-    std::cout << "Frame Info - Frame Number: " << frame_info.nFrameNum << "\n";
-    std::cout << "Frame Info - Timestamp (High): " << frame_info.nDevTimeStampHigh << "\n";
-    std::cout << "Frame Info - Timestamp (Low): " << frame_info.nDevTimeStampLow << "\n";
-    std::cout << "Frame Info - Timestamp (64bit): " << timestamp_nano << "\n";
-    std::cout << "Frame Info - Timestamp (date format): " << nanosec2date(timestamp_nano) << "\n";
-    std::cout << "Frame Info - Host Timestamp: " << frame_info.nHostTimeStamp << "\n";
-    std::cout << "Frame Info - Frame Length: " << frame_info.nFrameLen << "\n";
-    std::cout << "Frame Info - Lost Packet Count: " << frame_info.nLostPacket << "\n";
+    if (only_timestamp)
+    {
+        std::cout << "Frame Info - Timestamp (date format): " << nanosec2date(timestamp_nano) << "\n";
+    }
+    else
+    {
+        std::cout << "Frame Info - Width: " << frame_info.nWidth << "\n";
+        std::cout << "Frame Info - Height: " << frame_info.nHeight << "\n";
+        std::cout << "Frame Info - Pixel Type: " << frame_info.enPixelType << "\n";
+        std::cout << "Frame Info - Frame Number: " << frame_info.nFrameNum << "\n";
+        std::cout << "Frame Info - Timestamp (High): " << frame_info.nDevTimeStampHigh << "\n";
+        std::cout << "Frame Info - Timestamp (Low): " << frame_info.nDevTimeStampLow << "\n";
+        std::cout << "Frame Info - Timestamp (64bit): " << timestamp_nano << "\n";
+        std::cout << "Frame Info - Timestamp (date format): " << nanosec2date(timestamp_nano) << "\n";
+        std::cout << "Frame Info - Host Timestamp: " << frame_info.nHostTimeStamp << "\n";
+        std::cout << "Frame Info - Host Timestamp (date format): " << nanosec2date(frame_info.nHostTimeStamp * 1000000) << "\n";
+        std::cout << "Frame Info - Frame Length: " << frame_info.nFrameLen << "\n";
+        std::cout << "Frame Info - Lost Packet Count: " << frame_info.nLostPacket << "\n";
+    }
 }
 
 int64_t combine_high_low(unsigned int high, unsigned int low)

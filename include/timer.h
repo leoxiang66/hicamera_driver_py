@@ -1,7 +1,5 @@
 #ifndef TIMER_H
 #define TIMER_H
-
-
 #include "utils.h"
 
 class Timer {
@@ -9,7 +7,7 @@ public:
     static const int Ksec2micro = 1000000;
 
     // 构造函数
-    Timer(uint64_t sync_point = 10000000, double freq = 1);
+    Timer(uint64_t sync_point = 10*Ksec2micro, double freq = 1);
 
     // 获取当前时间的微秒时间戳
     uint64_t getCurrentTimeUs() const;
