@@ -16,7 +16,7 @@ int main()
 {
 
     uint64_t sync_point = 10000000;
-    Timer timer(sync_point, 20.0);
+    Timer timer(sync_point, 1.0);
 
     void *cam = init_SDK();
 
@@ -54,9 +54,10 @@ int main()
 
     for (size_t i = 0; i < 10; i++)
     {
-        std::thread thread2(issue_action_command,1,1,1,"255.255.255.255",100,0);
-        thread2.detach(); // 让线程独立运行
-        // timer.syncToNextInterval();
+        // std::thread thread2(issue_action_command,1,1,1,"255.255.255.255",100,0);
+        // thread2.detach(); // 让线程独立运行
+        issue_action_command();
+        timer.syncToNextInterval();
     }
 
     // if (frame != NULL)
