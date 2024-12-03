@@ -16,7 +16,7 @@ int main()
 {
 
     uint64_t sync_point = 10000000;
-    Timer timer(sync_point, 1.0);
+    Timer timer(sync_point, 20.0);
 
     void *cam = init_SDK();
 

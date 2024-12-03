@@ -78,7 +78,7 @@ int64_t combine_high_low(unsigned int high, unsigned int low);
 
 std::string nanosec2date(int64_t nanoseconds);
 
-void issue_action_command(unsigned int action_device_key = 1, unsigned int action_group_key = 1, unsigned int group_mask = 1, const char *broadcast_address = "255.255.255.255", unsigned int time_out = 100,
+void issue_action_command(unsigned int action_device_key = 1, unsigned int action_group_key = 1, unsigned int group_mask = 1, const char *broadcast_address = "255.255.255.255", unsigned int time_out = 1,
                           unsigned int action_time_enable = 0);
 
 #endif
