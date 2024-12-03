@@ -1,3 +1,6 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -9,10 +12,9 @@
 #include <chrono>
 #include <ctime> // For std::localtime
 #include <sstream>
-#include <iomanip> 
+#include <iomanip>
 #include "constants.h"
 #include <thread>
-
 
 int SaveImage(void *handle, MV_SAVE_IAMGE_TYPE enSaveImageType, MV_FRAME_OUT *stImageInfo);
 
@@ -24,7 +26,7 @@ bool PrintDeviceInfo(MV_CC_DEVICE_INFO *pstMVDevInfo);
 
 bool start_grabbing(void *handle);
 
-void save_non_raw_image(const char *format, void *handle, MV_FRAME_OUT* stImageInfo);
+void save_non_raw_image(const char *format, void *handle, MV_FRAME_OUT *stImageInfo);
 
 void stop_grabbing(void *handle);
 
@@ -68,9 +70,7 @@ bool set_trigger_source_to_action(void *handle);
 
 bool set_action_keys(void *handle, unsigned int action_device_key = 1, unsigned int action_group_key = 1, unsigned int group_mask = 1);
 
-MV_FRAME_OUT* pop_image_buffer(void *handle, unsigned int timeout = 1000, bool print_info = true);
-
-
+MV_FRAME_OUT *pop_image_buffer(void *handle, unsigned int timeout = 1000, bool print_info = true);
 
 void print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp = false);
 
@@ -78,7 +78,7 @@ int64_t combine_high_low(unsigned int high, unsigned int low);
 
 std::string nanosec2date(int64_t nanoseconds);
 
-
-
 void issue_action_command(unsigned int action_device_key = 1, unsigned int action_group_key = 1, unsigned int group_mask = 1, const char *broadcast_address = "255.255.255.255", unsigned int time_out = 100,
                           unsigned int action_time_enable = 0);
+
+#endif

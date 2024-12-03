@@ -14,7 +14,7 @@ void pop_thread(void *handle)
 
 int main()
 {
-    
+
     uint64_t sync_point = 10000000;
     Timer timer(sync_point, 20.0);
 
@@ -23,7 +23,6 @@ int main()
     // 启动线程并运行 pop_thread 函数
     std::thread thread1(pop_thread, cam);
     thread1.detach(); // 让线程独立运行
-    
 
     if (cam == NULL)
     {
@@ -55,7 +54,8 @@ int main()
 
     for (size_t i = 0; i < 10; i++)
     {
-        issue_action_command();
+        std::thread thread2(issue_action_command,1,1,1,"255.255.255.255",100,0);
+        thread2.detach(); // 让线程独立运行
         // timer.syncToNextInterval();
     }
 
