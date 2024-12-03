@@ -510,11 +510,11 @@ bool turn_on_IEEE1588(void *handle)
         return false;
     }
 
-    if (SetEnumValue(handle, "GevIEEE1588Status", 8) != MV_OK)
-    {
-        std::cout << "Failed to set the camera as slave..." << std::endl;
-        return false;
-    }
+    // if (SetEnumValue(handle, "GevIEEE1588Status", 8) != MV_OK)
+    // {
+    //     std::cout << "Failed to set the camera as slave..." << std::endl;
+    //     return false;
+    // }
 
     return true;
 }
@@ -527,7 +527,45 @@ void wait_until_slave(void *handle)
         std::cout << "waiting on salve ..." << std::endl;
         sleep(2);
         GetEnumValue(handle, "GevIEEE1588Status", &v2);
-    } while (v2.nCurValue != 8);
+    } while (v2.nCurValue != IEEE_SLAVE);
+}
+
+
+const char* get_IEEE_status(const unsigned int value)
+{
+    switch (value)
+    {
+    case IEEE_INITIALIZING:
+        return "Initializing";
+
+    case IEEE_FAULTY:
+        return "Faulty";
+
+    case IEEE_DISABLED:
+        return "Disabled";
+
+    case IEEE_LISTENING:
+        return "Listening";
+
+    case IEEE_PREMASTER:
+        return "PreMaster";
+
+    case IEEE_MASTER:
+        return "Master";
+
+    case IEEE_PASSIVE:
+        return "Passive";
+
+    case IEEE_UNCALIBRATED:
+        return "Uncalibrated";
+
+    case IEEE_SLAVE:
+        return "Slave";
+
+    default:
+        std::cout << "invalid value: "<<value << std::endl;
+        return "Invalid value";
+    }
 }
 
 void print_IEEE1588_status(void *handle)
@@ -538,8 +576,8 @@ void print_IEEE1588_status(void *handle)
     GetBoolValue(handle, "GevIEEE1588", &v1);
     GetEnumValue(handle, "GevIEEE1588Status", &v2);
 
-    std::cout << v1 << std::endl;
-    std::cout << v2.nCurValue << std::endl;
+    std::cout << "IEEE 1588 mode: " << v1 << std::endl;
+    std::cout << "IEEE 1588 status: " << get_IEEE_status(v2.nCurValue) << std::endl;
 }
 
 bool set_trigger_mode_on(void *handle)

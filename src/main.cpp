@@ -12,7 +12,7 @@ int main()
 
     set_exposure_auto_off(cam);
 
-    set_exposure_time(cam, 30000.0); // 30ms
+    set_exposure_time(cam, 40000.0); // 40ms
 
     get_exposure_time(cam);
 

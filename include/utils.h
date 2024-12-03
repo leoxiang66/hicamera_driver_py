@@ -10,6 +10,7 @@
 #include <ctime> // For std::localtime
 #include <sstream>
 #include <iomanip> 
+#include "constants.h"
 
 
 int SaveImage(void *handle, MV_SAVE_IAMGE_TYPE enSaveImageType, MV_FRAME_OUT *stImageInfo);
