@@ -331,27 +331,27 @@ void save_non_raw_image(const char *format, void *handle, MV_FRAME_OUT *stImageI
 
 void issue_action_command(unsigned int action_device_key, unsigned int action_group_key, unsigned int group_mask, const char *broadcast_address, unsigned int time_out, unsigned int action_time_enable)
 {
-    MV_ACTION_CMD_INFO *stActionCmdInfo = new MV_ACTION_CMD_INFO;
-    stActionCmdInfo->nDeviceKey = action_device_key;
-    stActionCmdInfo->nGroupKey = action_group_key;
-    stActionCmdInfo->nGroupMask = group_mask;
-    stActionCmdInfo->pBroadcastAddress = broadcast_address;
-    stActionCmdInfo->nTimeOut = time_out;
-    stActionCmdInfo->bActionTimeEnable = action_time_enable;
+    MV_ACTION_CMD_INFO stActionCmdInfo;
+    stActionCmdInfo.nDeviceKey = action_device_key;
+    stActionCmdInfo.nGroupKey = action_group_key;
+    stActionCmdInfo.nGroupMask = group_mask;
+    stActionCmdInfo.pBroadcastAddress = broadcast_address;
+    stActionCmdInfo.nTimeOut = time_out;
+    stActionCmdInfo.bActionTimeEnable = action_time_enable;
 
-    MV_ACTION_CMD_RESULT_LIST *actionCmdResults = new MV_ACTION_CMD_RESULT_LIST;
+    MV_ACTION_CMD_RESULT_LIST actionCmdResults;
 
-    if (MV_GIGE_IssueActionCommand(stActionCmdInfo, actionCmdResults) != MV_OK)
+    if (MV_GIGE_IssueActionCommand(&stActionCmdInfo, &actionCmdResults) != MV_OK)
     {
         std::cout << "Issue action command failed!" << std::endl;
     }
 
     else
     {
-        for (size_t i = 0; i < actionCmdResults->nNumResults; i++)
+        for (size_t i = 0; i < actionCmdResults.nNumResults; i++)
         {
             // Access the current result
-            auto result = actionCmdResults->pResults[i];
+            auto result = actionCmdResults.pResults[i];
 
             // Print the result index
             std::cout << "Action Command Results - Result " << (i + 1) << ":\n";
@@ -434,9 +434,9 @@ int GetIntValue(void *handle, IN const char *strKey, OUT MVCC_INTVALUE *pIntValu
 float get_exposure_time(void *handle)
 {
 
-    MVCC_FLOATVALUE *result = new MVCC_FLOATVALUE;
+    MVCC_FLOATVALUE result;
 
-    auto ret = GetFloatValue(handle, "ExposureTime", result);
+    auto ret = GetFloatValue(handle, "ExposureTime", &result);
 
     if (ret != MV_OK)
     {
@@ -446,9 +446,9 @@ float get_exposure_time(void *handle)
     else
     {
         // 获取曝光时间的当前值、最大值和最小值
-        auto exposure_time_cur = result->fCurValue;
-        auto exposure_time_max = result->fMax;
-        auto exposure_time_min = result->fMin;
+        auto exposure_time_cur = result.fCurValue;
+        auto exposure_time_max = result.fMax;
+        auto exposure_time_min = result.fMin;
 
         // 输出结构体的值
         std::cout << "Current Value: " << exposure_time_cur << std::endl;
@@ -650,9 +650,9 @@ bool set_action_keys(void *handle, unsigned int action_device_key, unsigned int 
     return true;
 }
 
-MV_FRAME_OUT *pop_image_buffer(void *handle, unsigned int timeout, bool print_info)
+MV_FRAME_OUT* pop_image_buffer(void *handle, unsigned int timeout, bool print_info)
 {
-    MV_FRAME_OUT *out_frame = new MV_FRAME_OUT;
+    MV_FRAME_OUT* out_frame = new MV_FRAME_OUT;
 
     auto ret = MV_CC_GetImageBuffer(handle, out_frame, timeout);
 
@@ -670,6 +670,8 @@ MV_FRAME_OUT *pop_image_buffer(void *handle, unsigned int timeout, bool print_in
 
         return out_frame;
     }
+
+    delete out_frame;
 
     return NULL;
 }
