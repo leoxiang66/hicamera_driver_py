@@ -346,22 +346,6 @@ void issue_action_command(unsigned int action_device_key, unsigned int action_gr
         std::cout << "Issue action command failed!" << std::endl;
     }
 
-    else
-    {
-        for (size_t i = 0; i < actionCmdResults.nNumResults; i++)
-        {
-            // Access the current result
-            auto result = actionCmdResults.pResults[i];
-
-            // Print the result index
-            std::cout << "Action Command Results - Result " << (i + 1) << ":\n";
-
-            // Print the status (assuming nStatus == 0 indicates success)
-            std::cout << "Action Command Results - Status: " << (result.nStatus == 0 ? "Success" : "Failure") << "\n";
-
-            std::cout << std::endl; // Add an extra line for readability
-        }
-    }
 }
 
 void stop_grabbing(void *handle)
