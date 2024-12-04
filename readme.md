@@ -10,3 +10,9 @@ run:
 ```sh
 make run
 ```
+
+install:
+
+```sh
+make install
+```
