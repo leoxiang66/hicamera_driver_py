@@ -61,8 +61,8 @@ make install
 ```
 
 This will:
-- Copy the header files from `include/` to `/usr/local/include/hicamera_driver`.
-- Build a static library (`libhicamera_driver.a`) and install it to `/usr/local/lib`.
+- Copy the header files from `include/` to `/usr/local/include/hikvision_api`.
+- Build a static library (`libhikvision_api.a`) and install it to `/usr/local/lib`.
 
 You can then use these utilities in other projects by including the headers and linking against the library.
 
@@ -77,8 +77,8 @@ make uninstall
 ```
 
 This will:
-- Remove the header files from `/usr/local/include/hicamera_driver`.
-- Remove the static library (`libhicamera_driver.a`) from `/usr/local/lib`.
+- Remove the header files from `/usr/local/include/hikvision_api`.
+- Remove the static library (`libhikvision_api.a`) from `/usr/local/lib`.
 
 ---
 
@@ -91,8 +91,8 @@ Once installed, you can use the utility code in other projects:
 In your source code, include the headers like this:
 
 ```cpp
-#include <hicamera_driver/utils.h>
-#include <hicamera_driver/timer.h>
+#include <hikvision_api/utils.h>
+#include <hikvision_api/timer.h>
 ```
 
 ### **2. Link the Library**
@@ -100,7 +100,7 @@ In your source code, include the headers like this:
 When compiling your project, specify the include path and link the library:
 
 ```sh
-g++ -o my_program my_program.cpp -lhicamera_driver -L/usr/local/lib -I/usr/local/include
+g++ -o my_program my_program.cpp -lhikvision_api -L/usr/local/lib -I/usr/local/include
 ```
 
 ---
@@ -119,14 +119,31 @@ This will remove the `build/` directory and any intermediate files.
 
 ## **License**
 
-Include your project's license here (if applicable, e.g., MIT, GPL, etc.).
+MIT License
+
+Copyright (c) [2024] [XIANG Tao]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ---
 
 ## **Contact**
 
-For questions, issues, or contributions, feel free to reach out to the project maintainer.
+For questions, issues, or contributions, feel free to open an issue.
 
----
-
-通过这个 `README.md`，用户可以快速了解如何构建、运行、安装、卸载以及在其他项目中使用你的工具代码。
