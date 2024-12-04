@@ -8,7 +8,6 @@
  * 
  * Dependencies:
  * - MvCameraControl.h
- * - pthread.h
  * - chrono, iostream, cstdint, ctime, thread, sstream
  */
 
@@ -19,7 +18,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <pthread.h>
 #include "MvCameraControl.h"
 #include <iostream>
 #include <cstdint>  // For int64_t
