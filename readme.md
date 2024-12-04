@@ -104,7 +104,7 @@ In your source code, include the headers like this:
 When compiling your project, specify the include path and link the library:
 
 ```sh
-g++ -o my_program my_program.cpp -lhikvision_api -L/usr/local/lib -I/usr/local/include
+g++ -o my_program my_program.cpp -lhikvision_api -L/usr/local/lib -I/usr/local/include -Wl,-rpath=$(MVCAM_COMMON_RUNENV)/64 -L$(MVCAM_COMMON_RUNENV)/64 -lMvCameraControl -lpthread
 ```
 
 ---

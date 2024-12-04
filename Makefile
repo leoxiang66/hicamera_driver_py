@@ -5,7 +5,7 @@ LIB_DIR = $(PREFIX)/lib
 
 main: src/main.cpp
 	mkdir -p build
-	g++ -g -o build/main src/utils.cpp src/main.cpp src/timer.cpp -I./include -Wl,-rpath=$(MVCAM_COMMON_RUNENV)/64 -L$(MVCAM_COMMON_RUNENV)/64 -lMvCameraControl -fconcepts -lpthread
+	g++ -g -o build/main src/utils.cpp src/main.cpp src/timer.cpp -I./include -Wl,-rpath=$(MVCAM_COMMON_RUNENV)/64 -L$(MVCAM_COMMON_RUNENV)/64 -lMvCameraControl -lpthread
 
 clean:
 	rm -rf ./build
