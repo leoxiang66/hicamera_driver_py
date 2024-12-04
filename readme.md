@@ -107,6 +107,27 @@ When compiling your project, specify the include path and link the library:
 g++ -o my_program my_program.cpp -lhikvision_api -L/usr/local/lib -I/usr/local/include -Wl,-rpath=$(MVCAM_COMMON_RUNENV)/64 -L$(MVCAM_COMMON_RUNENV)/64 -lMvCameraControl -lpthread
 ```
 
+or in `CMakeLists.txt`:
+1. add include path: 
+
+    ```
+    include_directories(
+    /usr/local/include
+    )
+    ```
+2. find libraries:
+    ```
+    find_library(HIKVISION_API_LIBRARY hikvision_api PATHS /usr/local/lib)
+    find_library(MVCAMERA_LIBRARY MvCameraControl PATHS $ENV{MVCAM_COMMON_RUNENV}/64)
+    ```
+3. target link libraries:
+    ```
+    target_link_libraries(XXX
+        ${HIKVISION_API_LIBRARY}
+        ${MVCAMERA_LIBRARY}
+        pthread
+    )
+    ```
 ---
 
 ## **Clean the Build**
