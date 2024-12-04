@@ -19,7 +19,7 @@ int main()
     uint64_t sync_point = 10000000;
     Timer timer(sync_point, 20.0);
 
-    void *cam = init_SDK();
+    void *cam = init_SDK(0);
 
     // 启动线程并运行 pop_thread 函数
     std::thread thread1(pop_thread, cam);

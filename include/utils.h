@@ -49,9 +49,10 @@ bool IsHBPixelFormat(MvGvspPixelType enType);
 /**
  * @brief Initialize the camera SDK.
  * 
+ * @param camera_idx Index of the camera to select
  * @return Pointer to the initialized SDK context, or nullptr on failure.
  */
-void *init_SDK();
+void *init_SDK(unsigned int camera_idx);
 
 /**
  * @brief Print device information.

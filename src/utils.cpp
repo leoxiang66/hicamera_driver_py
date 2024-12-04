@@ -88,7 +88,7 @@ bool IsHBPixelFormat(MvGvspPixelType enType)
     }
 }
 
-void *init_SDK()
+void *init_SDK(unsigned int camera_idx)
 {
     // logging
 
@@ -132,9 +132,9 @@ void *init_SDK()
         return NULL;
     }
 
-    printf("Please Intput camera index: ");
-    unsigned int nIndex = 0;
-    scanf("%d", &nIndex);
+    //todo: 通过参数选择camera
+    unsigned int nIndex = camera_idx;
+ 
 
     if (nIndex >= stDeviceList.nDeviceNum)
     {
