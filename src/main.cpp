@@ -5,10 +5,11 @@ void pop_thread(void *handle)
 {
     while (true)
     {
-        auto frame = pop_image_buffer(handle, 1000, false);
+        auto frame = pop_image_buffer(handle, 1, false);
         if (frame != NULL)
         {
             print_frame_info(frame, true);
+            // save_non_raw_image("png", handle, frame);
         }
     }
 }
@@ -33,7 +34,11 @@ int main()
 
     set_exposure_auto_off(cam);
 
-    set_exposure_time(cam, 15.0);
+    set_exposure_time(cam, 15000.0);
+
+    set_pixel_format(cam, PixelType_Gvsp_RGB8_Packed);
+
+    std::cout << "Pixel format: " <<get_pixel_format(cam) << std::endl;
 
     get_exposure_time(cam);
 

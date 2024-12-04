@@ -304,4 +304,18 @@ std::string nanosec2date(int64_t nanoseconds);
  */
 void issue_action_command(unsigned int action_device_key = 1, unsigned int action_group_key = 1, unsigned int group_mask = 1, const char *broadcast_address = "255.255.255.255", unsigned int time_out = 1, unsigned int action_time_enable = 0);
 
+
+
+int GetEnumValue(void *handle, IN const char *strKey, OUT MVCC_ENUMVALUE *pEnumValue);
+
+int SetEnumValue(void *handle, IN const char *strKey, IN unsigned int nValue);
+
+int SetEnumValueByString(void *handle, IN const char *strKey, IN const char *sValue);
+
+unsigned int get_pixel_format(void *handle);
+
+bool set_pixel_format(void *handle, unsigned int value);
+
 #endif
+
+

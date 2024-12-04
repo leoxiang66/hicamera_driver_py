@@ -1,5 +1,26 @@
 #include "utils.h"
 
+unsigned int get_pixel_format(void *handle)
+{
+
+    MVCC_ENUMVALUE pixel_format;
+    GetEnumValue(handle, "PixelFormat", &pixel_format);
+    return pixel_format.nCurValue;
+}
+
+bool set_pixel_format(void *handle, unsigned int value)
+{
+
+    MVCC_ENUMVALUE pixel_format;
+    if (SetEnumValue(handle, "PixelFormat", value) != MV_OK)
+    {
+        std::cout << "Set pixel format failed" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 // ch:����ͼƬ | en:Save Image
 int SaveImage(void *handle, MV_SAVE_IAMGE_TYPE enSaveImageType, MV_FRAME_OUT *stImageInfo)
 {
@@ -132,9 +153,7 @@ void *init_SDK(unsigned int camera_idx)
         return NULL;
     }
 
-    //todo: 通过参数选择camera
     unsigned int nIndex = camera_idx;
- 
 
     if (nIndex >= stDeviceList.nDeviceNum)
     {
