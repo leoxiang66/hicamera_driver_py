@@ -27,6 +27,7 @@
 #include <iomanip>
 #include "constants.h"
 #include <thread>
+#include "frame.h"
 
 /**
  * @brief Save an image captured by the camera.
@@ -275,14 +276,16 @@ MV_FRAME_OUT *pop_image_buffer(void *handle, unsigned int timeout = 1000, bool p
  */
 void print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp = false);
 
+
+
 /**
  * @brief Combine high and low 32-bit values into a 64-bit integer.
- * 
+ *
  * @param high High 32 bits.
  * @param low Low 32 bits.
- * @return Combined 64-bit integer.
+ * @return Combined unsigned 64-bit integer.
  */
-int64_t combine_high_low(unsigned int high, unsigned int low);
+uint64_t combine_high_low(unsigned int high, unsigned int low);
 
 /**
  * @brief Convert nanoseconds to a human-readable date format.
@@ -315,6 +318,8 @@ int SetEnumValueByString(void *handle, IN const char *strKey, IN const char *sVa
 unsigned int get_pixel_format(void *handle);
 
 bool set_pixel_format(void *handle, unsigned int value);
+
+FrameInfo *get_frame_info(MV_FRAME_OUT_INFO_EX *frame);
 
 #endif
 

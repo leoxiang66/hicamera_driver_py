@@ -650,9 +650,9 @@ bool set_action_keys(void *handle, unsigned int action_device_key, unsigned int 
     return true;
 }
 
-MV_FRAME_OUT* pop_image_buffer(void *handle, unsigned int timeout, bool print_info)
+MV_FRAME_OUT *pop_image_buffer(void *handle, unsigned int timeout, bool print_info)
 {
-    MV_FRAME_OUT* out_frame = new MV_FRAME_OUT;
+    MV_FRAME_OUT *out_frame = new MV_FRAME_OUT;
 
     auto ret = MV_CC_GetImageBuffer(handle, out_frame, timeout);
 
@@ -676,12 +676,22 @@ MV_FRAME_OUT* pop_image_buffer(void *handle, unsigned int timeout, bool print_in
     return NULL;
 }
 
+FrameInfo *get_frame_info(MV_FRAME_OUT_INFO_EX *frame)
+{
+    return new FrameInfo(
+        combine_high_low(frame->nDevTimeStampHigh, frame->nDevTimeStampLow),
+        frame->nFrameNum,
+        frame->nWidth,
+        frame->nHeight
+    );
+}
+
 void print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp)
 {
     auto frame_info = frame->stFrameInfo;
 
     // Combine high and low timestamps into a 64-bit timestamp
-    int64_t timestamp_nano = combine_high_low(frame_info.nDevTimeStampHigh, frame_info.nDevTimeStampLow);
+    uint64_t timestamp_nano = combine_high_low(frame_info.nDevTimeStampHigh, frame_info.nDevTimeStampLow);
 
     if (only_timestamp)
     {
@@ -704,9 +714,9 @@ void print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp)
     }
 }
 
-int64_t combine_high_low(unsigned int high, unsigned int low)
+uint64_t combine_high_low(unsigned int high, unsigned int low)
 {
-    return (static_cast<int64_t>(high) << 32) | static_cast<int64_t>(low);
+    return (static_cast<uint64_t>(high) << 32) | static_cast<uint64_t>(low);
 }
 
 std::string nanosec2date(int64_t nanoseconds)
