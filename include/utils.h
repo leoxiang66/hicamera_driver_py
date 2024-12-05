@@ -293,7 +293,7 @@ uint64_t combine_high_low(unsigned int high, unsigned int low);
  * @param nanoseconds Timestamp in nanoseconds.
  * @return Formatted date string.
  */
-std::string nanosec2date(int64_t nanoseconds);
+std::string nanosec2date(uint64_t nanoseconds);
 
 /**
  * @brief Issue an action command to the camera.

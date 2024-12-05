@@ -703,7 +703,7 @@ uint64_t combine_high_low(unsigned int high, unsigned int low)
     return (static_cast<uint64_t>(high) << 32) | static_cast<uint64_t>(low);
 }
 
-std::string nanosec2date(int64_t nanoseconds)
+std::string nanosec2date(uint64_t nanoseconds)
 {
     // Convert nanoseconds to seconds since epoch
     auto seconds = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::nanoseconds(nanoseconds));
