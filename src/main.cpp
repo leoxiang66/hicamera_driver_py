@@ -44,10 +44,8 @@ int main()
 
     turn_on_IEEE1588(cam);
 
-    // wait_until_slave(cam);
-
-    print_IEEE1588_status(cam);
-
+    wait_until_slave(cam);
+    
     set_trigger_mode_on(cam);
 
     set_trigger_source_to_action(cam);

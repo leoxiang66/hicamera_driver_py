@@ -513,12 +513,6 @@ bool turn_on_IEEE1588(void *handle)
         return false;
     }
 
-    // if (SetEnumValue(handle, "GevIEEE1588Status", 8) != MV_OK)
-    // {
-    //     std::cout << "Failed to set the camera as slave..." << std::endl;
-    //     return false;
-    // }
-
     return true;
 }
 
@@ -528,8 +522,10 @@ void wait_until_slave(void *handle)
     do
     {
         std::cout << "waiting on salve ..." << std::endl;
-        sleep(2);
+        sleep(5);
         GetEnumValue(handle, "GevIEEE1588Status", &v2);
+        print_IEEE1588_status(handle);
+
     } while (v2.nCurValue != IEEE_SLAVE);
 }
 
