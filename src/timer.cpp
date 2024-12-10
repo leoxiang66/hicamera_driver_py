@@ -21,7 +21,7 @@ uint64_t Timer::getCurrentTimeUs() const
 void Timer::syncToFirstInterval()
 {
     uint64_t current_time_us = getCurrentTimeUs();
-    uint64_t sleep_time_us = sync_point_ - (current_time_us % sync_point_);
+    uint64_t sleep_time_us = sync_point_ - (current_time_us % sync_point_) + 35000;
     next_interval_us_ = current_time_us + sleep_time_us;
 
     std::cout << "Wait until " << nanosec2date(next_interval_us_ * 1000) << std::endl;
