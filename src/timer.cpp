@@ -1,6 +1,6 @@
 #include "timer.h"
 
-Timer::Timer(uint64_t sync_point, double freq)
+Timer::Timer(uint64_t sync_point, int freq)
     : sync_point_(sync_point), freq_(freq)
 {
     interval_us_ = static_cast<uint64_t>(Ksec2micro / freq_);
