@@ -38,10 +38,15 @@ void Timer::syncToNextInterval()
 
     if (sleep_t_us > 0)
     {
-        std::this_thread::sleep_for(std::chrono::microseconds(sleep_t_us)- std::chrono::microseconds(500));
+        std::this_thread::sleep_for(std::chrono::microseconds(sleep_t_us) - std::chrono::microseconds(500));
     }
     else
     {
         std::cout << "No sleep" << std::flush << std::endl;
     }
+}
+
+void Timer::syncToNextIntervalMinusExposureTime(uint64_t exposure_time)
+{
+    std::this_thread::sleep_for(std::chrono::microseconds(interval_us_) - std::chrono::microseconds(exposure_time) - std::chrono::microseconds(500));
 }

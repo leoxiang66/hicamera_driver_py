@@ -18,6 +18,8 @@ public:
     // 同步到下一个时间间隔
     void syncToNextInterval();
 
+    void syncToNextIntervalMinusExposureTime(uint64_t exposure_time);
+
 private:
     uint64_t sync_point_;       // 同步点
     double freq_;               // 频率
