@@ -345,7 +345,6 @@ void issue_action_command(unsigned int action_device_key, unsigned int action_gr
     {
         std::cout << "Issue action command failed!" << std::endl;
     }
-
 }
 
 void stop_grabbing(void *handle)
@@ -400,6 +399,16 @@ void set_exposure_auto_off(void *handle)
     if (MV_OK != nRet)
     {
         printf("Set auto exposure off fail! nRet [0x%x]\n", nRet);
+    }
+}
+
+void set_exposure_auto_on(void *handle)
+{
+
+    auto nRet = MV_CC_SetEnumValue(handle, "ExposureAuto", MV_EXPOSURE_AUTO_MODE_CONTINUOUS);
+    if (MV_OK != nRet)
+    {
+        printf("Set auto exposure on fail! nRet [0x%x]\n", nRet);
     }
 }
 
@@ -516,6 +525,17 @@ bool turn_on_IEEE1588(void *handle)
     return true;
 }
 
+bool turn_off_IEEE1588(void *handle)
+{
+    if (SetBoolValue(handle, "GevIEEE1588", false) != MV_OK)
+    {
+        std::cout << "Failed to turn off IEEE 1588" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
 void wait_until_slave(void *handle)
 {
     MVCC_ENUMVALUE v2;
@@ -583,6 +603,16 @@ bool set_trigger_mode_on(void *handle)
     if (SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_ON) != MV_OK)
     {
         std::cout << "Turn on trigger mode fail..." << std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool set_trigger_mode_off(void *handle)
+{
+    if (SetEnumValue(handle, "TriggerMode", MV_TRIGGER_MODE_OFF) != MV_OK)
+    {
+        std::cout << "Turn off trigger mode fail..." << std::endl;
         return false;
     }
     return true;
@@ -662,11 +692,10 @@ FrameInfo *get_frame_info(MV_FRAME_OUT_INFO_EX *frame)
         combine_high_low(frame->nDevTimeStampHigh, frame->nDevTimeStampLow),
         frame->nFrameNum,
         frame->nWidth,
-        frame->nHeight
-    );
+        frame->nHeight);
 }
 
-void print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp)
+uint64_t print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp)
 {
     auto frame_info = frame->stFrameInfo;
 
@@ -692,6 +721,8 @@ void print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp)
         std::cout << "Frame Info - Frame Length: " << frame_info.nFrameLen << "\n";
         std::cout << "Frame Info - Lost Packet Count: " << frame_info.nLostPacket << "\n";
     }
+
+    return timestamp_nano;
 }
 
 uint64_t combine_high_low(unsigned int high, unsigned int low)
@@ -726,4 +757,41 @@ std::string nanosec2date(uint64_t nanoseconds)
 
     // If formatting fails, return an empty string
     return "";
+}
+
+uint64_t print_current_time()
+{
+
+    // 打印得到frame的时间
+    auto now = std::chrono::system_clock::now();                                                  // 获取当前时间点
+    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()); // 转换为纳秒
+    uint64_t nanoseconds = duration.count();                                                      // 将 duration 转换为 uint64_t
+
+    std::cout << nanosec2date(nanoseconds) << std::endl;
+
+    return nanoseconds;
+}
+
+void register_img_callback(void* handle, void(__stdcall* image_cb) (unsigned char * pData, MV_FRAME_OUT_INFO_EX* pFrameInfo, void* pUser))
+{
+    auto nRet = MV_CC_RegisterImageCallBackEx(handle, image_cb, handle);
+    if (MV_OK != nRet)
+    {
+        printf("MV_CC_RegisterImageCallBackEx fail! nRet [%x]\n", nRet);
+    }
+}
+
+void watch_event(void* handle,const char* event_name, void (*event_cb)(MV_EVENT_OUT_INFO *pEventInfo, void *pUser) ){
+    auto nRet = MV_CC_EventNotificationOn(handle, event_name);
+    if (MV_OK != nRet)
+    {
+        printf("Set Event Notification On fail! nRet [0x%x]\n", nRet);
+    }
+
+    nRet = MV_CC_RegisterEventCallBackEx(handle, event_name, event_cb, handle);
+    if (MV_OK != nRet)
+    {
+        printf("Register Event CallBack fail! nRet [0x%x]\n", nRet);
+    }
+
 }

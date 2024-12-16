@@ -274,7 +274,7 @@ MV_FRAME_OUT *pop_image_buffer(void *handle, unsigned int timeout = 1000, bool p
  * @param frame Pointer to the image frame.
  * @param only_timestamp Whether to only print the timestamp (default: false).
  */
-void print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp = false);
+uint64_t print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp = false);
 
 
 
@@ -309,17 +309,143 @@ void issue_action_command(unsigned int action_device_key = 1, unsigned int actio
 
 
 
-int GetEnumValue(void *handle, IN const char *strKey, OUT MVCC_ENUMVALUE *pEnumValue);
 
-int SetEnumValue(void *handle, IN const char *strKey, IN unsigned int nValue);
+/**
+ * @brief Get the enumeration value for a specified key.
+ * 
+ * This function retrieves the enumeration value associated with the given key.
+ * 
+ * @param handle Device handle.
+ * @param strKey The key for which to retrieve the enumeration value.
+ * @param pEnumValue Pointer to the structure that will receive the enumeration value.
+ * @return int Status code indicating success or failure.
+ */
+int GetEnumValue(void *handle, 
+                 IN const char *strKey, 
+                 OUT MVCC_ENUMVALUE *pEnumValue);
 
-int SetEnumValueByString(void *handle, IN const char *strKey, IN const char *sValue);
+/**
+ * @brief Set the enumeration value for a specified key.
+ * 
+ * This function sets the enumeration value for the specified key.
+ * 
+ * @param handle Device handle.
+ * @param strKey The key for which to set the enumeration value.
+ * @param nValue The enumeration value to set.
+ * @return int Status code indicating success or failure.
+ */
+int SetEnumValue(void *handle, 
+                 IN const char *strKey, 
+                 IN unsigned int nValue);
 
+/**
+ * @brief Set the enumeration value using a string.
+ * 
+ * This function sets the enumeration value for the specified key using a string representation.
+ * 
+ * @param handle Device handle.
+ * @param strKey The key for which to set the enumeration value.
+ * @param sValue The string representation of the enumeration value to set.
+ * @return int Status code indicating success or failure.
+ */
+int SetEnumValueByString(void *handle, 
+                         IN const char *strKey, 
+                         IN const char *sValue);
+
+/**
+ * @brief Get the current pixel format of the camera.
+ * 
+ * This function retrieves the pixel format currently set for the camera.
+ * 
+ * @param handle Device handle.
+ * @return unsigned int The current pixel format.
+ */
 unsigned int get_pixel_format(void *handle);
 
+/**
+ * @brief Set the pixel format for the camera.
+ * 
+ * This function sets the pixel format for the camera.
+ * 
+ * @param handle Device handle.
+ * @param value The pixel format to set.
+ * @return bool True if the operation was successful, false otherwise.
+ */
 bool set_pixel_format(void *handle, unsigned int value);
 
+/**
+ * @brief Get frame information from the camera.
+ * 
+ * This function retrieves frame information for the specified frame.
+ * 
+ * @param frame Pointer to the frame information structure.
+ * @return FrameInfo* Pointer to the frame information structure.
+ */
 FrameInfo *get_frame_info(MV_FRAME_OUT_INFO_EX *frame);
+
+/**
+ * @brief Print the current time in a specific format.
+ * 
+ * This function retrieves the current time and prints it in a specified format.
+ * 
+ * @return uint64_t The current time in milliseconds since epoch.
+ */
+uint64_t print_current_time();
+
+/**
+ * @brief Register an image callback function.
+ * 
+ * This function registers a callback function that will be called when an image is available.
+ * 
+ * @param handle Device handle.
+ * @param image_cb Pointer to the callback function that processes the image data.
+ */
+void register_img_callback(void *handle, 
+                           void(__stdcall *image_cb)(unsigned char *pData, 
+                                                     MV_FRAME_OUT_INFO_EX *pFrameInfo, 
+                                                     void *pUser));
+
+/**
+ * @brief Watch for specific events from the camera.
+ * 
+ * This function registers a callback function to be called when a specified event occurs.
+ * 
+ * @param handle Device handle.
+ * @param event_name The name of the event to watch for.
+ * @param event_cb Pointer to the callback function that processes the event information.
+ */
+void watch_event(void *handle, 
+                 const char *event_name, 
+                 void (*event_cb)(MV_EVENT_OUT_INFO *pEventInfo, void *pUser));
+
+/**
+ * @brief Disable the trigger mode of the device.
+ * 
+ * This function disables the trigger mode of the connected device, ensuring that the device operates in free-run mode.
+ * 
+ * @param handle Device handle.
+ * @return `true` if the trigger mode was successfully disabled, `false` otherwise.
+ */
+bool set_trigger_mode_off(void *handle);
+
+/**
+ * @brief Disable IEEE 1588 Precision Time Protocol (PTP).
+ * 
+ * This function disables the IEEE 1588 protocol on the device, stopping time synchronization with other devices.
+ * 
+ * @param handle Device handle.
+ * @return `true` if IEEE 1588 was successfully disabled, `false` otherwise.
+ */
+bool turn_off_IEEE1588(void *handle);
+
+/**
+ * @brief Enable automatic exposure mode.
+ * 
+ * This function enables the automatic exposure mode on the device, allowing it to adjust exposure settings dynamically based on the environment.
+ * 
+ * @param handle Device handle.
+ */
+void set_exposure_auto_on(void *handle);
 
 #endif
 
