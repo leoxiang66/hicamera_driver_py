@@ -275,6 +275,7 @@ MV_FRAME_OUT *pop_image_buffer(void *handle, unsigned int timeout = 1000, bool p
  * @param only_timestamp Whether to only print the timestamp (default: false).
  */
 uint64_t print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp = false);
+uint64_t print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp = false);
 
 
 
@@ -446,10 +447,6 @@ bool turn_off_IEEE1588(void *handle);
  * @param handle Device handle.
  */
 void set_exposure_auto_on(void *handle);
-
-void set_gamma_correction(void *handle, float gamma);
-
-void turn_off_gamma(void *handle);
 
 #endif
 
