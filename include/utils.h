@@ -275,7 +275,7 @@ MV_FRAME_OUT *pop_image_buffer(void *handle, unsigned int timeout = 1000, bool p
  * @param only_timestamp Whether to only print the timestamp (default: false).
  */
 uint64_t print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp = false);
-uint64_t print_frame_info(MV_FRAME_OUT *frame, bool only_timestamp = false);
+
 
 
 

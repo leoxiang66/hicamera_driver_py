@@ -772,11 +772,7 @@ uint64_t print_current_time()
     return nanoseconds;
 }
 
-<<<<<<< HEAD
-void register_img_callback(void *handle, void(__stdcall *image_cb)(unsigned char *pData, MV_FRAME_OUT_INFO_EX *pFrameInfo, void *pUser))
-=======
 void register_img_callback(void* handle, void(__stdcall* image_cb) (unsigned char * pData, MV_FRAME_OUT_INFO_EX* pFrameInfo, void* pUser))
->>>>>>> db40b4e46be4d0bd10257a288a5635b37d518098
 {
     auto nRet = MV_CC_RegisterImageCallBackEx(handle, image_cb, handle);
     if (MV_OK != nRet)
@@ -785,12 +781,7 @@ void register_img_callback(void* handle, void(__stdcall* image_cb) (unsigned cha
     }
 }
 
-<<<<<<< HEAD
-void watch_event(void *handle, const char *event_name, void (*event_cb)(MV_EVENT_OUT_INFO *pEventInfo, void *pUser))
-{
-=======
 void watch_event(void* handle,const char* event_name, void (*event_cb)(MV_EVENT_OUT_INFO *pEventInfo, void *pUser) ){
->>>>>>> db40b4e46be4d0bd10257a288a5635b37d518098
     auto nRet = MV_CC_EventNotificationOn(handle, event_name);
     if (MV_OK != nRet)
     {
@@ -802,7 +793,6 @@ void watch_event(void* handle,const char* event_name, void (*event_cb)(MV_EVENT_
     {
         printf("Register Event CallBack fail! nRet [0x%x]\n", nRet);
     }
-<<<<<<< HEAD
 }
 
 void set_gamma_correction(void *handle, float gamma)
@@ -833,7 +823,4 @@ void turn_off_gamma(void *handle)
         std::cout << "Failed to turn off Gamma Correction" << std::endl;
         return;
     }
-=======
-
->>>>>>> db40b4e46be4d0bd10257a288a5635b37d518098
 }
