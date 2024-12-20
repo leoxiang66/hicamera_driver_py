@@ -104,7 +104,7 @@ int main()
 
     set_exposure_auto_off(cam);
 
-    set_exposure_time(cam, 50000);
+    set_exposure_time(cam, 15);
 
     // set_pixel_format(cam, PixelType_Gvsp_RGB8_Packed); // 50ms
 
@@ -115,8 +115,10 @@ int main()
 
     get_exposure_time(cam);
 
+    set_gamma_correction(cam, 0.3);
+
     turn_on_IEEE1588(cam);
-    // wait_until_slave(cam);
+    wait_until_slave(cam);
     // turn_off_IEEE1588(cam);
 
     set_trigger_mode_off(cam);

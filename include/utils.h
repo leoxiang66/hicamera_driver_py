@@ -448,6 +448,11 @@ bool turn_off_IEEE1588(void *handle);
  */
 void set_exposure_auto_on(void *handle);
 
+
+void set_gamma_correction(void *handle, float gamma);
+
+void turn_off_gamma(void *handle);
+
 #endif
 
 
