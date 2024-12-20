@@ -772,7 +772,7 @@ uint64_t print_current_time()
     return nanoseconds;
 }
 
-void register_img_callback(void* handle, void(__stdcall* image_cb) (unsigned char * pData, MV_FRAME_OUT_INFO_EX* pFrameInfo, void* pUser))
+void register_img_callback(void *handle, void(__stdcall *image_cb)(unsigned char *pData, MV_FRAME_OUT_INFO_EX *pFrameInfo, void *pUser))
 {
     auto nRet = MV_CC_RegisterImageCallBackEx(handle, image_cb, handle);
     if (MV_OK != nRet)
@@ -781,7 +781,8 @@ void register_img_callback(void* handle, void(__stdcall* image_cb) (unsigned cha
     }
 }
 
-void watch_event(void* handle,const char* event_name, void (*event_cb)(MV_EVENT_OUT_INFO *pEventInfo, void *pUser) ){
+void watch_event(void *handle, const char *event_name, void (*event_cb)(MV_EVENT_OUT_INFO *pEventInfo, void *pUser))
+{
     auto nRet = MV_CC_EventNotificationOn(handle, event_name);
     if (MV_OK != nRet)
     {
@@ -822,5 +823,13 @@ void turn_off_gamma(void *handle)
     {
         std::cout << "Failed to turn off Gamma Correction" << std::endl;
         return;
+    }
+}
+
+void set_gain(void *handle, float gain)
+{
+    if (SetFloatValue(handle, "Gain", gain) != MV_OK)
+    {
+        std::cout << "Failed to set gain of the camera." << std::endl;
     }
 }

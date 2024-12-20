@@ -453,6 +453,10 @@ void set_gamma_correction(void *handle, float gamma);
 
 void turn_off_gamma(void *handle);
 
+int SetFloatValue(void *handle, IN const char *strKey, IN float fValue);
+
+void set_gain(void *handle, float gain);
+
 #endif
 
 
